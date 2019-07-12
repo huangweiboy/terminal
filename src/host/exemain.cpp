@@ -83,9 +83,9 @@ static bool ShouldUseConhostV2()
     }
 }
 
-static bool ShouldUseLegacyConhost(const bool fForceV1)
+static bool ShouldUseLegacyConhost(const ConsoleArguments& args)
 {
-    return fForceV1 || !ShouldUseConhostV2();
+    return (args.GetForceV1() || !ShouldUseConhostV2()) && !args.InConptyMode();
 }
 
 [[nodiscard]] static HRESULT ActivateLegacyConhost(const HANDLE handle)
@@ -163,7 +163,7 @@ int CALLBACK wWinMain(
     HRESULT hr = args.ParseCommandline();
     if (SUCCEEDED(hr))
     {
-        if (ShouldUseLegacyConhost(args.GetForceV1()))
+        if (ShouldUseLegacyConhost(args))
         {
             if (args.ShouldCreateServerHandle())
             {
